@@ -19,7 +19,7 @@ public class QuestionManager extends MapManager<UUID, Question> {
         super(new HashMap<>());
 
         // load into storage
-        new QuestionLoader(plugin).load();
+        new QuestionLoader(plugin, this).load();
     }
 
     /**
@@ -28,7 +28,13 @@ public class QuestionManager extends MapManager<UUID, Question> {
      * @return question
      */
     public Question pickRandom() {
-        List<Question> questions = this.map.values().stream().toList();
+        // pick random type
+        QuestionType randomType = QuestionType.random();
+
+        // questions
+        List<Question> questions = this.map.values().stream()
+                .filter(q -> q.getType().equals(randomType))
+                .toList();
 
         return CollectionsUtil.getRandomListElement(questions);
     }

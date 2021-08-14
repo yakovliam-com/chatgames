@@ -12,12 +12,19 @@ public class QuestionLoader {
     private final ChatGamesPlugin plugin;
 
     /**
+     * Question manager
+     */
+    private final QuestionManager questionManager;
+
+    /**
      * Question loader
      *
      * @param plugin plugin
+     * @param questionManager question manager
      */
-    public QuestionLoader(ChatGamesPlugin plugin) {
+    public QuestionLoader(ChatGamesPlugin plugin, QuestionManager questionManager) {
         this.plugin = plugin;
+        this.questionManager = questionManager;
     }
 
     /**
@@ -25,6 +32,6 @@ public class QuestionLoader {
      */
     public void load() {
         // get list from storage & load into manager
-        plugin.getStorage().loadQuestions().forEach(q -> plugin.getQuestionManager().put(UUID.randomUUID(), q));
+        plugin.getStorage().loadQuestions().forEach(q -> questionManager.put(UUID.randomUUID(), q));
     }
 }

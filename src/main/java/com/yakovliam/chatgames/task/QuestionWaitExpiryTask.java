@@ -5,7 +5,9 @@ import com.yakovliam.chatgames.api.message.Message;
 import com.yakovliam.chatgames.config.ChatGamesConfigKeys;
 import com.yakovliam.chatgames.question.Question;
 
-public class QuestionWaitTask extends Task {
+import java.util.List;
+
+public class QuestionWaitExpiryTask extends Task {
 
     /**
      * Question
@@ -23,7 +25,7 @@ public class QuestionWaitTask extends Task {
      * @param question question
      * @param plugin   plugin
      */
-    public QuestionWaitTask(Question question, ChatGamesPlugin plugin) {
+    public QuestionWaitExpiryTask(Question question, ChatGamesPlugin plugin) {
         super(plugin, false, ChatGamesConfigKeys.SETTINGS_WAIT_UNTIL_ANSWER_FROM_ASK.get(plugin.getChatGamesConfig().getAdapter()));
         this.question = question;
         this.plugin = plugin;
@@ -40,14 +42,10 @@ public class QuestionWaitTask extends Task {
 
         String playerWonMessage = ChatGamesConfigKeys.NOBODY_WON_MESSAGE.get(plugin.getChatGamesConfig().getAdapter())
                 .replace("%answer%", question.getAnswer());
-        String wrapper = ChatGamesConfigKeys.TEXT_WRAPPER.get(plugin.getChatGamesConfig().getAdapter());
+        List<String> wrapper = ChatGamesConfigKeys.TEXT_WRAPPER.get(plugin.getChatGamesConfig().getAdapter());
 
-        Message.builder()
-                .addLine(wrapper.replace("%text%", playerWonMessage))
-                .build()
-                .broadcast();
-
-        // use active question manager to queue a new question
-        plugin.getActiveQuestionManager().askNewQuestion();
+        Message.Builder builder = Message.builder();
+        wrapper.forEach(l -> builder.addLine(l.replace("%text%", playerWonMessage)));
+        builder.build().broadcast();
     }
 }

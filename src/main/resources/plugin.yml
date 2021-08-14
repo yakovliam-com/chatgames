@@ -5,3 +5,5 @@ authors: [yakovliam]
 website: https://yakovliam.com/
 main: com.yakovliam.chatgames.ChatGamesPlugin
 api-version: 1.17
+depend:
+  - PlaceholderAPI

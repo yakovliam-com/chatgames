@@ -3,13 +3,19 @@ package com.yakovliam.chatgames.question;
 import com.yakovliam.chatgames.ChatGamesPlugin;
 import com.yakovliam.chatgames.api.message.Message;
 import com.yakovliam.chatgames.config.ChatGamesConfigKeys;
-import com.yakovliam.chatgames.task.QuestionWaitTask;
+import com.yakovliam.chatgames.reward.Reward;
+import com.yakovliam.chatgames.task.QuestionWaitExpiryTask;
 import com.yakovliam.chatgames.task.RepeatingTask;
 import com.yakovliam.chatgames.user.CGUser;
+import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class ActiveQuestionManager implements Listener {
 
@@ -26,7 +32,7 @@ public class ActiveQuestionManager implements Listener {
     /**
      * Wait task
      */
-    private QuestionWaitTask waitTask;
+    private QuestionWaitExpiryTask waitExpiryTask;
 
     /**
      * Repeating question task
@@ -47,22 +53,33 @@ public class ActiveQuestionManager implements Listener {
         this.startRepeatingQuestionTask();
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onAsyncPlayerChat(AsyncPlayerChatEvent event) {
+        if (this.activeQuestion == null) {
+            return;
+        }
+
         String message = event.getMessage();
         if (message.equals(activeQuestion.getAnswer())) {
+            // cancel
+            event.setCancelled(true);
             // they got the answer!
+
+            // cancel wait task
+            this.waitExpiryTask.stop();
 
             String playerWonMessage = ChatGamesConfigKeys.PLAYER_WON_MESSAGE.get(plugin.getChatGamesConfig().getAdapter())
                     .replace("%player%", event.getPlayer().getName())
                     .replace("%answer%", activeQuestion.getAnswer());
-            String wrapper = ChatGamesConfigKeys.TEXT_WRAPPER.get(plugin.getChatGamesConfig().getAdapter());
+            List<String> wrapper = ChatGamesConfigKeys.TEXT_WRAPPER.get(plugin.getChatGamesConfig().getAdapter()).stream()
+                    .map(l -> l.replace("%text%", playerWonMessage)).collect(Collectors.toList());
 
-            Message.builder()
-                    .addLine(wrapper.replace("%text%", playerWonMessage))
-                    .build()
-                    .broadcast();
+            Message.Builder builder = Message.builder();
+            wrapper.forEach(builder::addLine);
+            builder.build().broadcast();
 
+            // set active question to null
+            this.activeQuestion = null;
             // get user
             CGUser user = plugin.getUserCache().getCache().get(event.getPlayer().getUniqueId()).join();
             // add one to wins
@@ -70,6 +87,23 @@ public class ActiveQuestionManager implements Listener {
 
             // save user
             plugin.getStorage().saveUser(user, true);
+
+            // give prize
+            Reward reward = ChatGamesConfigKeys.RANDOM_REWARD.get(plugin.getChatGamesConfig().getAdapter());
+            Bukkit.getScheduler().runTask(plugin, () -> {
+                // execute command
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), PlaceholderAPI.setPlaceholders(event.getPlayer(), reward.getCommand()));
+            });
+
+            // send message
+            String playerWonRecievedMessage = ChatGamesConfigKeys.PLAYER_WON_RECEIVED_MESSAGE.get(plugin.getChatGamesConfig().getAdapter())
+                    .replace("%prize%", reward.getHandle());
+            List<String> wrapper2 = ChatGamesConfigKeys.TEXT_WRAPPER.get(plugin.getChatGamesConfig().getAdapter()).stream()
+                    .map(l -> l.replace("%text%", playerWonRecievedMessage)).collect(Collectors.toList());
+
+            Message.Builder builder2 = Message.builder();
+            wrapper2.forEach(builder2::addLine);
+            builder2.build().broadcast();
         }
     }
 
@@ -113,21 +147,25 @@ public class ActiveQuestionManager implements Listener {
      * Asks new question
      */
     public void askNewQuestion() {
-        // cancel current
-        this.waitTask.stop();
+        if (this.waitExpiryTask != null) {
+            // cancel current
+            this.waitExpiryTask.stop();
+        }
+
         // set new question
         this.activeQuestion = plugin.getQuestionManager().pickRandom();
 
         // compile & send message from random question
-        String text = activeQuestion.getWrapperText().replace("%question%", activeQuestion.getSupplied());
-        String wrapper = ChatGamesConfigKeys.TEXT_WRAPPER.get(plugin.getChatGamesConfig().getAdapter());
-        Message.builder()
-                .addLine(wrapper.replace("%text%", text))
-                .build()
-                .broadcast();
+        String text = activeQuestion.getWrapperText().replace("%supplied%", activeQuestion.getSupplied());
+        List<String> wrapper = ChatGamesConfigKeys.TEXT_WRAPPER.get(plugin.getChatGamesConfig().getAdapter()).stream()
+                .map(l -> l.replace("%text%", text)).collect(Collectors.toList());
+
+        Message.Builder builder = Message.builder();
+        wrapper.forEach(builder::addLine);
+        builder.build().broadcast();
 
         // create wait task
-        this.waitTask = new QuestionWaitTask(activeQuestion, plugin);
-        this.waitTask.start();
+        this.waitExpiryTask = new QuestionWaitExpiryTask(activeQuestion, plugin);
+        this.waitExpiryTask.start();
     }
 }

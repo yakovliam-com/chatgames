@@ -37,6 +37,8 @@ public class QuestionLoader {
     public QuestionLoader(ChatGamesPlugin plugin) {
         this.mathEquationsProvider = new JsonConfigurationProvider(plugin, "math-equations.json");
         this.unscrambleWordsProvider = new JsonConfigurationProvider(plugin, "unscramble-words.json");
+        this.mathEquationsProvider.load();
+        this.unscrambleWordsProvider.load();
         this.plugin = plugin;
     }
 

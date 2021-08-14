@@ -2,6 +2,7 @@ package com.yakovliam.chatgames;
 
 import com.yakovliam.chatgames.api.Plugin;
 import com.yakovliam.chatgames.api.message.Message;
+import com.yakovliam.chatgames.command.CommandManager;
 import com.yakovliam.chatgames.config.ChatGamesConfig;
 import com.yakovliam.chatgames.listener.PlayerListener;
 import com.yakovliam.chatgames.question.ActiveQuestionManager;
@@ -41,13 +42,17 @@ public class ChatGamesPlugin extends Plugin {
     public void onEnable() {
         Message.initAudience(this);
 
-        this.storage = new Storage(new JsonStorageImplementation(this));
         this.chatGamesConfig = new ChatGamesConfig(this, provideConfigAdapter("config.yml"));
+
+        this.loadStorage();
+        this.loadQuestionManager();
+
         this.userCache = new UserCache(this);
-        this.questionManager = new QuestionManager(this);
 
         this.getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
         this.activeQuestionManager = new ActiveQuestionManager(this);
+
+        new CommandManager(this);
     }
 
     @Override
@@ -100,5 +105,22 @@ public class ChatGamesPlugin extends Plugin {
      */
     public ActiveQuestionManager getActiveQuestionManager() {
         return activeQuestionManager;
+    }
+
+    /**
+     * Loads question manager
+     */
+    public void loadQuestionManager() {
+        this.questionManager = new QuestionManager(this);
+    }
+
+    /**
+     * Loads storage
+     */
+    public void loadStorage() {
+        if (this.storage != null) {
+            this.storage.getStorageImplementation().shutdown();
+        }
+        this.storage = new Storage(new JsonStorageImplementation(this));
     }
 }
