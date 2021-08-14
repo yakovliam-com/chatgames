@@ -1,0 +1,7 @@
+name: @name@
+version: @version@
+description: A Minecraft Plugin designed to provide chat games
+authors: [yakovliam]
+website: https://yakovliam.com/
+main: com.yakovliam.chatgames.ChatGamesPlugin
+api-version: 1.17
