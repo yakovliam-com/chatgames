@@ -7,7 +7,6 @@ import com.yakovliam.chatgames.reward.RandomCollection;
 import com.yakovliam.chatgames.reward.Reward;
 import sh.okx.timeapi.TimeAPI;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 

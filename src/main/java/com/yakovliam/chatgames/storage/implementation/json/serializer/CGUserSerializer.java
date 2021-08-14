@@ -29,11 +29,10 @@ public class CGUserSerializer implements TypeSerializer<CGUser> {
      * @param type the type of return value required
      * @param node the node containing serialized data
      * @return an object
-     * @throws SerializationException if the presented data is invalid
      * @since 4.0.0
      */
     @Override
-    public CGUser deserialize(Type type, ConfigurationNode node) throws SerializationException {
+    public CGUser deserialize(Type type, ConfigurationNode node) {
         UUID uuid = UUID.fromString(Objects.requireNonNull(node.node("uuid").getString()));
         int wins = node.node("wins").getInt();
         return new CGUser(uuid, wins);
