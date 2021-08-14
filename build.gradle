@@ -27,6 +27,7 @@ repositories {
     maven { url 'https://libraries.minecraft.net/' }
     maven { url = 'https://repo.extendedclip.com/content/repositories/placeholderapi/' }
     maven { url = 'https://jitpack.io' }
+    maven { url = "https://repo.piggypiglet.me/releases" }
 }
 
 dependencies {
@@ -44,6 +45,7 @@ dependencies {
     implementation "com.github.ben-manes.caffeine:caffeine:3.0.3"
     implementation "me.mattstudios:triumph-msg-adventure:2.2.4-SNAPSHOT"
     implementation 'org.spongepowered:configurate-gson:4.1.1'
+    implementation "me.piggypiglet:TimeAPI:+"
 }
 
 test {
@@ -66,6 +68,7 @@ shadowJar {
     relocate "com.github.benmanes.caffeine", "${project.ext.groupId}.lib.caffeine"
     relocate "me.lucko.commodore", "${project.ext.groupId}.lib.commodore"
     relocate "co.aikar.commands", "${project.ext.groupId}.lib.acf"
+    relocate "sh.okx.timeapi", "${project.ext.groupId}.lib.timeapi"
 }
 
 // Replace version information in src/main/resources

@@ -1,0 +1,15 @@
+#   ██████ ██   ██  █████  ████████      ██████   █████  ███    ███ ███████ ███████  #
+#  ██      ██   ██ ██   ██    ██        ██       ██   ██ ████  ████ ██      ██       #
+#  ██      ███████ ███████    ██        ██   ███ ███████ ██ ████ ██ █████   ███████  #
+#  ██      ██   ██ ██   ██    ██        ██    ██ ██   ██ ██  ██  ██ ██           ██  #
+#   ██████ ██   ██ ██   ██    ██         ██████  ██   ██ ██      ██ ███████ ███████  #
+settings:
+  delay-between-games: "5m" # 5m = 5 minutes
+  wait-until-answer-from-ask: "1m"
+question-type-message:
+  unscramble: "&7Unscramble this word for a chance to win a prize &8> &f%supplied%"
+  math: "&7Solve this math equation for a chance to win a prize &8> &f%supplied%"
+text-wrapper:
+  - "&8(&bChat Games&8) %text%"
+player-won-message: "&f%player% &7won the game! The answer is: &f%answer%&7!"
+nobody-won-message: "&cNobody &7won the game! The answer was: &f%answer%&7!"

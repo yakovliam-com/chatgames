@@ -1,0 +1,30 @@
+[
+  {
+    "supplied": "5 + 1",
+    "answer": "6"
+  },
+  {
+    "supplied": "12 * 9",
+    "answer": "108"
+  },
+  {
+    "supplied": "46 * 12",
+    "answer": "552"
+  },
+  {
+    "supplied": "Combine: (x+4)*(2x+5)",
+    "answer": "2x^2+13x+20"
+  },
+  {
+    "supplied": "Factor: x²- 324",
+    "answer": "(x+18)(x-18)"
+  },
+  {
+    "supplied": "2⁻³",
+    "answer": "1/8"
+  },
+  {
+    "supplied": "-35023+847",
+    "answer": "-34176"
+  }
+]
