@@ -72,7 +72,7 @@ public class ActiveQuestionManager implements Listener {
                     .replace("%player%", event.getPlayer().getName())
                     .replace("%answer%", activeQuestion.getAnswer());
             List<String> wrapper = ChatGamesConfigKeys.TEXT_WRAPPER.get(plugin.getChatGamesConfig().getAdapter()).stream()
-                    .map(l -> l.replace("%text%", playerWonMessage)).collect(Collectors.toList());
+                    .map(l -> l.replace("%text%", playerWonMessage)).toList();
 
             Message.Builder builder = Message.builder();
             wrapper.forEach(builder::addLine);
@@ -99,7 +99,7 @@ public class ActiveQuestionManager implements Listener {
             String playerWonRecievedMessage = ChatGamesConfigKeys.PLAYER_WON_RECEIVED_MESSAGE.get(plugin.getChatGamesConfig().getAdapter())
                     .replace("%prize%", reward.getHandle());
             List<String> wrapper2 = ChatGamesConfigKeys.TEXT_WRAPPER.get(plugin.getChatGamesConfig().getAdapter()).stream()
-                    .map(l -> l.replace("%text%", playerWonRecievedMessage)).collect(Collectors.toList());
+                    .map(l -> l.replace("%text%", playerWonRecievedMessage)).toList();
 
             Message.Builder builder2 = Message.builder();
             wrapper2.forEach(builder2::addLine);
